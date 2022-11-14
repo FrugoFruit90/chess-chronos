@@ -64,23 +64,22 @@ def create_app(app_environment=None):
                 for i, game in enumerate(pgn_game_generator(pgn_file)):
                     if i != int(request.args.get("game_no")):
                         continue
-                    else:
-                        game_form = GameForm()
-                        headers = game.headers
-                        game_form.title.data = f'{headers["White"]} - {headers["Black"]}, {headers["Date"]}'
-                        for move_no, (move_white, move_black) in enumerate(pairwise_longest(game.mainline())):
-                            move_form = MoveForm()
-                            move_form.move_number = move_no + 1
-                            move_form.white_move = move_white.move
-                            move_form.white_time = move_white.clock()
-                            try:
-                                move_form.black_move = move_black.move
-                                move_form.black_time = move_black.clock()
-                            except AttributeError:
-                                move_form.black_move = '---'
-                                move_form.black_time = '---'
-                            game_form.moves.append_entry(move_form)
-                        return render_template('table.html', game_form=game_form)
+                    game_form = GameForm()
+                    headers = game.headers
+                    game_form.title.data = f'{headers["White"]} - {headers["Black"]}, {headers["Date"]}'
+                    for move_no, (move_white, move_black) in enumerate(pairwise_longest(game.mainline())):
+                        move_form = MoveForm()
+                        move_form.move_number = move_no + 1
+                        move_form.white_move = move_white.move
+                        move_form.white_time = move_white.clock()
+                        try:
+                            move_form.black_move = move_black.move
+                            move_form.black_time = move_black.clock()
+                        except AttributeError:
+                            move_form.black_move = '---'
+                            move_form.black_time = '---'
+                        game_form.moves.append_entry(move_form)
+                    return render_template('table.html', game_form=game_form)
         elif request.method == 'POST':
             with open(f'upload/{request.args.get("filename")}') as pgn_file_input:
                 for i, game in enumerate(pgn_game_generator(pgn_file_input)):
@@ -106,4 +105,4 @@ def create_app(app_environment=None):
 
 if __name__ == "__main__":
     app = create_app(os.getenv('FLASK_ENV', 'dev'))
-    app.run()
+    app.run(host='0.0.0.0')
