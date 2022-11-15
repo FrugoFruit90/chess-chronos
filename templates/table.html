@@ -1,41 +1,35 @@
-{% extends "base.html" %}
-
-{% block content %}
-  <table id="data" class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Age</th>
-        <th>Address</th>
-        <th>Phone Number</th>
-        <th>Email</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-        <tr>
-          <td>{{ user.name }}</td>
-          <td>{{ user.age }}</td>
-          <td>{{ user.address }}</td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.email }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% endblock %}
-
-{% block scripts %}
-  <script>
-    $(document).ready(function () {
-      $('#data').DataTable({
-        columns: [
-          null,
-          {searchable: false},
-          {orderable: false, searchable: false},
-          {orderable: false, searchable: false},
-          null],
-      });
-    });
-  </script>
-{% endblock %}
+<html>
+    <head>
+        <title>Input move numbers</title>
+    </head>
+    <body>
+        <h1>Add clock times after moves</h1>
+        <div>
+            <form action="" method="post" name="gameform">
+                {{ game_form.hidden_tag() }}
+                Game: {{ game_form.title }}<br>
+                <div>
+                    <table>
+                        <tr>
+                            <th> Move Number </th>
+                            <th> White </th>
+                            <th> Black </th>
+                            <th> Time Left (W) </th>
+                            <th> Time Left (B) </th>
+                        </tr>
+                        {% for move in game_form.moves %}
+                        <tr>
+                            <td>{{ move.move_number }}</td>
+                            <td>{{ move.white_move }}</td>
+                            <td>{{ move.black_move }}</td>
+                            <td>{{ move.white_time }}</td>
+                            <td>{{ move.black_time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <p><input type="submit" name="edit" value="Send"></p>
+            </form>
+        </div>
+    </body>
+</html>
