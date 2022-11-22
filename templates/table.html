@@ -1,35 +1,35 @@
 <html>
-    <head>
-        <title>Input move numbers</title>
-    </head>
-    <body>
-        <h1>Add clock times after moves</h1>
-        <div>
-            <form action="" method="post" name="gameform">
-                {{ game_form.hidden_tag() }}
-                Game: {{ game_form.title }}<br>
-                <div>
-                    <table>
-                        <tr>
-                            <th> #Move </th>
-                            <th> White </th>
-                            <th> Black </th>
-                            <th> Time Left (W) </th>
-                            <th> Time Left (B) </th>
-                        </tr>
-                        {% for move in game_form.moves %}
-                        <tr>
-                            <td>{{ move.move_number }}</td>
-                            <td>{{ move.white_move }}</td>
-                            <td>{{ move.black_move }}</td>
-                            <td>{{ move.white_time }}</td>
-                            <td>{{ move.black_time }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-                <p><input type="submit" name="edit" value="Next Game"></p>
-            </form>
-        </div>
-    </body>
+<head>
+    <title>Input move numbers</title>
+</head>
+<body style="background-color: grey">
+    <h1>Add clock times after moves</h1>
+    <div>
+        <form action="" method="post" name="gameform">
+            {{ game_form.hidden_tag() }}
+            Game: {{ game_form.title }}<br>
+            <div>
+                <table>
+                    <tr>
+                        <th> #Move</th>
+                        <th> White</th>
+                        <th> Time Left (W)</th>
+                        <th> Black</th>
+                        <th> Time Left (B)</th>
+                    </tr>
+                    {% for move in game_form.moves %}
+                    <tr>
+                        <td>{{ move.move_number }}</td>
+                        <td>{{ move.white_move }}</td>
+                        <td>{{ move.white_time }}</td>
+                        <td>{{ move.black_move }}</td>
+                        <td>{{ move.black_time }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <p><input type="submit" name="edit" value="Next Game"></p>
+        </form>
+    </div>
+</body>
 </html>

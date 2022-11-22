@@ -91,10 +91,6 @@ def create_app(app_environment=None):
                             move_black.set_clock(int(request.form[f'moves-{move_no}-black_time']))
                         except AttributeError:
                             move_white.set_clock(int(request.form[f'moves-{move_no}-white_time']))
-                        except ValueError:
-                            raise MissingValueException("Missing clock values!")
-                            # TODO: this should be changed to just giving the same page without
-                            # TODO: or actually have a validator on the website
                     print(game, file=open(f'download/{request.args.get("filename")}', "a"), end="\n\n")
             return redirect(
                 url_for('game_data', filename=request.args.get("filename"),
