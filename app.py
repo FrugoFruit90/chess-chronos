@@ -70,10 +70,10 @@ def create_app(app_environment=None):
                     for move_no, (move_white, move_black) in enumerate(pairwise_longest(game.mainline())):
                         move_form = MoveForm()
                         move_form.move_number = move_no + 1
-                        move_form.white_move = move_white.move
+                        move_form.white_move = move_white.san()
                         move_form.white_time = move_white.clock()
                         try:
-                            move_form.black_move = move_black.move
+                            move_form.black_move = move_black.san()
                             move_form.black_time = move_black.clock()
                         except AttributeError:
                             move_form.black_move = '---'
