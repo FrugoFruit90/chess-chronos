@@ -62,7 +62,7 @@ def create_app(app_environment=None):
         if request.method == 'GET':
             with open(f'upload/{request.args.get("filename")}') as pgn_file:
                 for i, game in enumerate(pgn_game_generator(pgn_file)):
-                    if i <= int(request.args.get("game_no")):
+                    if i < int(request.args.get("game_no")):
                         continue
                     elif i == int(request.args.get("game_no")):
                         game_form = GameForm()
@@ -81,8 +81,8 @@ def create_app(app_environment=None):
                                 move_form.black_time = '---'
                             game_form.moves.append_entry(move_form)
                         return render_template('table.html', game_form=game_form)
-                    else:
-                        return redirect(url_for('download', filename=request.args.get("filename")))
+                    # game_no > number of games in pgn, a.k.a all games have been tagged
+            return redirect(url_for('download', filename=request.args.get("filename")))
 
         elif request.method == 'POST':
             with open(f'upload/{request.args.get("filename")}') as pgn_file_input:
@@ -100,11 +100,13 @@ def create_app(app_environment=None):
                 url_for('game_data', filename=request.args.get("filename"),
                         game_no=int(request.args.get("game_no")) + 1))
 
-    return app
-
     @app.route('/download/')
     def download():
-        return send_file(f'download/{request.args.get("filename")}')
+        if request.method == 'GET':
+            # flash('You tagged all the games! The PGN will be downloaded now.') TODO: doesn't work, sadge
+            return send_file(f'download/{request.args.get("filename")}')
+
+    return app
 
 
 if __name__ == "__main__":
