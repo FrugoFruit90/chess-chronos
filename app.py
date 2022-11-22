@@ -2,7 +2,7 @@ import itertools
 import logging
 import os
 
-from flask import Flask, flash, request, redirect, render_template, url_for
+from flask import Flask, flash, request, redirect, render_template, url_for, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -54,7 +54,7 @@ def create_app(app_environment=None):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return redirect(url_for('game_data', filename=filename, game_no=0))
-        else:
+        elif request.method == 'GET':
             return render_template('base.html', title='Move Table')
 
     @app.route('/game_data/', methods=['GET', 'POST'])
@@ -62,24 +62,28 @@ def create_app(app_environment=None):
         if request.method == 'GET':
             with open(f'upload/{request.args.get("filename")}') as pgn_file:
                 for i, game in enumerate(pgn_game_generator(pgn_file)):
-                    if i != int(request.args.get("game_no")):
+                    if i <= int(request.args.get("game_no")):
                         continue
-                    game_form = GameForm()
-                    headers = game.headers
-                    game_form.title.data = f'{headers["White"]} - {headers["Black"]}, {headers["Date"]}'
-                    for move_no, (move_white, move_black) in enumerate(pairwise_longest(game.mainline())):
-                        move_form = MoveForm()
-                        move_form.move_number = move_no + 1
-                        move_form.white_move = move_white.san()
-                        move_form.white_time = move_white.clock()
-                        try:
-                            move_form.black_move = move_black.san()
-                            move_form.black_time = move_black.clock()
-                        except AttributeError:
-                            move_form.black_move = '---'
-                            move_form.black_time = '---'
-                        game_form.moves.append_entry(move_form)
-                    return render_template('table.html', game_form=game_form)
+                    elif i == int(request.args.get("game_no")):
+                        game_form = GameForm()
+                        headers = game.headers
+                        game_form.title.data = f'{headers["White"]} - {headers["Black"]}, {headers["Date"]}'
+                        for move_no, (move_white, move_black) in enumerate(pairwise_longest(game.mainline())):
+                            move_form = MoveForm()
+                            move_form.move_number = move_no + 1
+                            move_form.white_move = move_white.san()
+                            move_form.white_time = move_white.clock()
+                            try:
+                                move_form.black_move = move_black.san()
+                                move_form.black_time = move_black.clock()
+                            except AttributeError:
+                                move_form.black_move = '---'
+                                move_form.black_time = '---'
+                            game_form.moves.append_entry(move_form)
+                        return render_template('table.html', game_form=game_form)
+                    else:
+                        return redirect(url_for('download', filename=request.args.get("filename")))
+
         elif request.method == 'POST':
             with open(f'upload/{request.args.get("filename")}') as pgn_file_input:
                 for i, game in enumerate(pgn_game_generator(pgn_file_input)):
@@ -97,6 +101,10 @@ def create_app(app_environment=None):
                         game_no=int(request.args.get("game_no")) + 1))
 
     return app
+
+    @app.route('/download/')
+    def download():
+        return send_file(f'download/{request.args.get("filename")}')
 
 
 if __name__ == "__main__":
